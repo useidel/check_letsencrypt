@@ -86,15 +86,15 @@ compare_dates(){
 # Take action, i.e. set the EXITSTATUS
 if [ $MYDAYS2GO -gt $WARNLEVEL ];  # more than Warninglevel days in seconds left
 then
-	echo "OK - $MYDAYS2GO left for renewal of $MYLECN"
+	echo "OK - $MYDAYS2GO days left for renewal of $MYLECN"
 	EXITSTATUS=0
 else
 	if [ $MYDAYS2GO -gt $CRITLEVEL ]; # more than Criticallevel days in seconds 
 	then
-		echo "WARNING - $MYDAYS2GO left for renewal of $MYLECN"
+		echo "WARNING - $MYDAYS2GO days left for renewal of $MYLECN"
 		EXITSTATUS=1
 	else
-		echo "CRITICAL - $MYDAYS2GO left for renewal of $MYLECN"
+		echo "CRITICAL - $MYDAYS2GO days left for renewal of $MYLECN"
 		EXITSTATUS=2	    # less than Criticallevel days in seconds or even expired
 	fi
 fi
