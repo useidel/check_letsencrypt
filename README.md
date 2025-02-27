@@ -12,11 +12,14 @@ $ ./check_letsencrypt.sh
  This plugin will check if a lets encrypt certificate is about to expire.
 
 
- Usage: check_letsencrypt.sh -<h|n>
+ Usage: check_letsencrypt.sh -<h|n> -w <warning> -c <critical>
 
-   -n: Certifcate CN
+   -n: Certifcate Common Name
+   -w: WARNING days left for renewal
+   -c: CRITICAL days left for renewal
+
    -h: print this help
- 
+
 $
 ````
 
