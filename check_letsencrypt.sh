@@ -41,19 +41,24 @@ fi
 
 check_expiry_date()
 {
-MYNOW=`date +%s`
+MYNOW=`date +%s` # Now in Unix Epoch Seconds
+# Fetch the expiry date ... but we need to change the format of it
 MYEXPIRYDATE=`curl -s https://crt.sh/csv?q=$1|tail -1|awk -F"," '{print $4}'`
+# Converting the expiry date to Unix Epoch Seconds
 MYEXPIRYDATE=`date -d $MYEXPIRYDATE +%s`
+# Check how many seconds are left between now and the expiry date
 MYSEC2GO=`echo "$MYEXPIRYDATE - $MYNOW" | bc`
-if [ $MYSEC2GO -gt 2592000 ]; 
+
+# Take action, i.e. set the EXITSTATUS
+if [ $MYSEC2GO -gt 2592000 ];  # more than 30 days in seconds left
 then
 	EXITSTATUS=0
 else
-	if [ $MYSEC2GO -gt 864000 ];
+	if [ $MYSEC2GO -gt 864000 ]; # more than 10 days in seconds 
 	then
 		EXITSTATUS=1
 	else
-		EXITSTATUS=2
+		EXITSTATUS=2	    # less than 10 days in seconds or even expired
 	fi
 fi
 }
