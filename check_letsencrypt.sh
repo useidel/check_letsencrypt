@@ -54,6 +54,12 @@ MYEXPIRYDATE=`curl -s https://crt.sh/csv?q=$1|tail -1|awk -F"," '{print $4}'`
 MYEXPIRYDATE=`date -d $MYEXPIRYDATE +%s`
 # Check how many seconds are left between now and the expiry date
 MYSECS2GO=`echo "$MYEXPIRYDATE - $MYNOW" | bc`
+# If the number of seconds is negativ we can simply stop here -> certificate is expired
+if [ $MYSECS2GO -lt 0 ]; then
+	echo "UNKNOWN - certificate for $MYLECN is expired"
+	EXITSTATUS=3	    
+	exit $EXITSTATUS
+fi
 # Convert the seconds in days
 MYDAYS2GO=`echo "$MYSECS2GO / 3600 / 24" | bc`
 }
@@ -84,18 +90,18 @@ fi
 
 compare_dates(){
 # Take action, i.e. set the EXITSTATUS
-if [ $MYDAYS2GO -gt $WARNLEVEL ];  # more than Warninglevel days in seconds left
+if [ $MYDAYS2GO -gt $WARNLEVEL ];  # more than Warninglevel days 
 then
 	echo "OK - $MYDAYS2GO days left for renewal of $MYLECN"
 	EXITSTATUS=0
 else
-	if [ $MYDAYS2GO -gt $CRITLEVEL ]; # more than Criticallevel days in seconds 
+	if [ $MYDAYS2GO -gt $CRITLEVEL ]; # more than Criticallevel days 
 	then
 		echo "WARNING - $MYDAYS2GO days left for renewal of $MYLECN"
 		EXITSTATUS=1
 	else
 		echo "CRITICAL - $MYDAYS2GO days left for renewal of $MYLECN"
-		EXITSTATUS=2	    # less than Criticallevel days in seconds or even expired
+		EXITSTATUS=2	    # less than Criticallevel days 
 	fi
 fi
 }
