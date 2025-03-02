@@ -61,14 +61,17 @@ if [ $? -ne 0 ]; then
 	echo $EXITMESSAGE | grep "Please install" > /dev/null 2>&1
 	if [ $? -ne 0 ]; then
 		EXITMESSAGE="Please install curl"
+		echo $EXITMESSAGE
+		exit $EXITSTATUS
 	else
 		EXITMESSAGE="Please install bc and curl"
+		echo $EXITMESSAGE
+		exit $EXITSTATUS
 	fi
-
+else
+	echo $EXITMESSAGE
+	exit $EXITSTATUS
 fi
-
-echo $EXITMESSAGE
-exit $EXITSTATUS
 }
 
 check_expiry_date()
