@@ -73,6 +73,11 @@ MYNOW=`date +%s` # Now in Unix Epoch Seconds
 MYEXPIRYDATE=`curl -s https://crt.sh/csv?q=$1|tail -1|awk -F"," '{print $4}'`
 # Converting the expiry date to Unix Epoch Seconds
 MYEXPIRYDATE=`date -d $MYEXPIRYDATE +%s`
+if [ $? -ne 0 ]; then
+	# something went wrong
+	echo "UNKNOWN - expiry date for $MYLECN is not available"
+	exit $STATE_UNKNOWN
+fi
 # Check how many seconds are left between now and the expiry date
 MYSECS2GO=`echo "$MYEXPIRYDATE - $MYNOW" | bc`
 # If the number of seconds is negativ we can simply stop here -> certificate is expired
