@@ -70,7 +70,7 @@ check_expiry_date()
 {
 MYNOW=`date +%s` # Now in Unix Epoch Seconds
 # Fetch the expiry date ... but we need to change the format of it
-MYEXPIRYDATE=`curl -s https://crt.sh/csv?q=$1|tail -1|awk -F"," '{print $4}'`
+MYEXPIRYDATE=`curl -s https://crt.sh/csv?q=$1\&exclude=expired\&deduplicate=Y|tail -1|awk -F"," '{print $4}'`
 # Converting the expiry date to Unix Epoch Seconds
 MYEXPIRYDATE=`date -d $MYEXPIRYDATE +%s`
 if [ $? -ne 0 ]; then
