@@ -45,6 +45,32 @@ if [ "$#" -lt 1 ]; then
         exit $EXITSTATUS
 fi
 
+check_tools()
+{
+EXITMESSAGE=""
+# run a basic bc to see if it works
+echo "2+2" | bc > /dev/null 2>&1
+
+if [ $? -ne 0 ]; then
+EXITMESSAGE="Please install bc"
+EXITSTATUS=$STATE_UNKNOWN
+fi
+
+which curl > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+	echo $EXITMESSAGE | grep "Please install" > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		EXITMESSAGE="Please install curl"
+	else
+		EXITMESSAGE="Please install bc and curl"
+	fi
+
+fi
+
+echo $EXITMESSAGE
+exit $EXITSTATUS
+}
+
 check_expiry_date()
 {
 MYNOW=`date +%s` # Now in Unix Epoch Seconds
@@ -57,8 +83,7 @@ MYSECS2GO=`echo "$MYEXPIRYDATE - $MYNOW" | bc`
 # If the number of seconds is negativ we can simply stop here -> certificate is expired
 if [ $MYSECS2GO -lt 0 ]; then
 	echo "UNKNOWN - certificate for $MYLECN is expired"
-	EXITSTATUS=3	    
-	exit $EXITSTATUS
+	exit $STATE_UNKNOWN
 fi
 # Convert the seconds in days
 MYDAYS2GO=`echo "$MYSECS2GO / 3600 / 24" | bc`
@@ -93,15 +118,15 @@ compare_dates(){
 if [ $MYDAYS2GO -gt $WARNLEVEL ];  # more than Warninglevel days 
 then
 	echo "OK - $MYDAYS2GO days left for renewal of $MYLECN"
-	EXITSTATUS=0
+	EXITSTATUS=$STATE_OK
 else
 	if [ $MYDAYS2GO -gt $CRITLEVEL ]; # more than Criticallevel days 
 	then
 		echo "WARNING - $MYDAYS2GO days left for renewal of $MYLECN"
-		EXITSTATUS=1
+		EXITSTATUS=$STATE_WARNING
 	else
 		echo "CRITICAL - $MYDAYS2GO days left for renewal of $MYLECN"
-		EXITSTATUS=2	    # less than Criticallevel days 
+		EXITSTATUS=$STATE_CRITICAL	    # less than Criticallevel days 
 	fi
 fi
 }
@@ -130,6 +155,7 @@ do
 	esac
 done
 
+check_tools
 check_expiry_date $MYLECN
 check_warning_critical
 compare_dates
