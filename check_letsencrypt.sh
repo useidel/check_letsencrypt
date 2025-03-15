@@ -29,9 +29,11 @@ print_usage() {
 	echo " This plugin will check if a lets encrypt certificate is about to expire."
 	echo 
 	echo 
-        echo " Usage: $PROGNAME -<h|n> -w <warning> -c <critical>"
+        echo " Usage: $PROGNAME -<h|n> -l|r -w <warning> -c <critical>"
         echo
         echo "   -n: Certifcate Common Name"
+        echo "   -l: Use the certifcate in /etc/letsencrypt/live for the check"
+        echo "   -r: Use http://crt.sh for the check"
         echo "   -w: WARNING days left for renewal"
         echo "   -c: CRITICAL days left for renewal"
 	echo
@@ -39,7 +41,7 @@ print_usage() {
 	echo 
 }
 
-if [ "$#" -lt 1 ]; then
+if [ "$#" -lt 2 ]; then
 	print_usage
         EXITSTATUS=$STATE_UNKNOWN
         exit $EXITSTATUS
@@ -66,11 +68,26 @@ if [ $? -ne 0 ]; then
 fi
 }
 
+get_expiry_date()
+{
+# Fetch the expiry date ... but we need to change the format of it
+if [ $CATCHLOCAL -ne 1 ] ; then
+	MYEXPIRYDATE=`curl -s https://crt.sh/csv?q=$1\&exclude=expired\&deduplicate=Y|tail -1|awk -F"," '{print $4}'`
+else
+	if [ -e /etc/letsencrypt/live/$1.homelinux.org/cert.pem ]; then
+		MYEXPIRYDATE=`openssl x509 -noout -enddate -in /etc/letsencrypt/live/$1.homelinux.org/cert.pem | cut -f2 -d '"'`
+	else
+		echo " Missing certificate file in /etc/letsencrypt/live/$1/"
+		echo " Please x-check"
+		EXITSTATUS=$STATE_UNKNOWN
+		exit $EXITSTATUS
+	fi
+fi
+}
+
 check_expiry_date()
 {
 MYNOW=`date +%s` # Now in Unix Epoch Seconds
-# Fetch the expiry date ... but we need to change the format of it
-MYEXPIRYDATE=`curl -s https://crt.sh/csv?q=$1\&exclude=expired\&deduplicate=Y|tail -1|awk -F"," '{print $4}'`
 # Converting the expiry date to Unix Epoch Seconds
 MYEXPIRYDATE=`date -d $MYEXPIRYDATE +%s`
 if [ $? -ne 0 ]; then
@@ -131,7 +148,7 @@ else
 fi
 }
 
-while getopts "hn:w:c:" OPT
+while getopts "hn:lrw:c:" OPT
 do		
 	case "$OPT" in
 	h)
@@ -141,12 +158,18 @@ do
 	n)
 		MYLECN=$2
 		;;
+	l)
+		CATCHLOCAL=1
+		;;
+	r)
+		CATCHLOCAL=0
+		;;
         w)
-                WARNLEVEL=$4
+                WARNLEVEL=$5
                 CUSTOMWARNCRIT=1
                 ;;
         c)
-                CRITLEVEL=$6
+                CRITLEVEL=$7
                 CUSTOMWARNCRIT=1
 		;;
 	*)
@@ -156,6 +179,7 @@ do
 done
 
 check_tools
+get_expiry_date $MYLECN
 check_expiry_date $MYLECN
 check_warning_critical
 compare_dates
