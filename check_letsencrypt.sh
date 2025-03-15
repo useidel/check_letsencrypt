@@ -8,8 +8,9 @@
 #
 
 CUSTOMWARNCRIT=0 # no external defined warning and critical levels
-WARNLEVEL=30
-CRITLEVEL=10
+CATCHLOCAL=0 # check via http://crt.sh per default
+WARNLEVEL=30 # predefined Warning level
+CRITLEVEL=10 # predefined Critical level
 
 
 # Nagios return codes
