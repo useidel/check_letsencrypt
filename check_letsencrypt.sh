@@ -75,8 +75,8 @@ get_expiry_date()
 if [ $CATCHLOCAL -ne 1 ] ; then
 	MYEXPIRYDATE=`curl -s https://crt.sh/csv?q=$1\&exclude=expired\&deduplicate=Y|tail -1|awk -F"," '{print $4}'`
 else
-	if [ -e /etc/letsencrypt/live/$1.homelinux.org/cert.pem ]; then
-		MYEXPIRYDATE=`openssl x509 -noout -enddate -in /etc/letsencrypt/live/$1.homelinux.org/cert.pem | cut -f2 -d '"'`
+	if [ -e /etc/letsencrypt/live/$1/cert.pem ]; then
+		MYEXPIRYDATE=`openssl x509 -noout -enddate -in /etc/letsencrypt/live/$1/cert.pem | cut -f2 -d '"'`
 	else
 		echo " Missing certificate file in /etc/letsencrypt/live/$1/"
 		echo " Please x-check"
