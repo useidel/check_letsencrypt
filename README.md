@@ -1,10 +1,12 @@
 # check_letsencrypt
 
 A very simply Nagios/Icinga plugin for a basic check if a lets encrypt certificate is about to expire.
-The required input is the Common Name (CN) used for the certificate. 
-This plugin can check a local file using the default file system structure. 
-But it can also look up the information in the internet. In that case the tool curl is neede.
-For some math actions you need to have bc installed as well.
+The required input is the Common Name (CN) used for the certificate and how you want to perform the check.
+
+This plugin can check a local file using the default file system structure. In that case make sure the the user executing this plugin has read access to the certificate file - either directly or via sudo.
+But it can also look up the information in the internet. In that case you it is the tool curl that you need instead local access to something.
+Due to some math actions you must have bc installed as well.
+
 Default: it will trigger WARNING if the expiry is more than 10 days but less than 30 days away. If the expiry date is less than 10 days away it will trigger a CRITICAL.
 You can configure your own thresholds (see below).
 
