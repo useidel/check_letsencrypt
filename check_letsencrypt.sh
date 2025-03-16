@@ -90,7 +90,7 @@ check_expiry_date()
 {
 MYNOW=`date +%s` # Now in Unix Epoch Seconds
 # Converting the expiry date to Unix Epoch Seconds
-MYEXPIRYDATE=`date -d $MYEXPIRYDATE +%s`
+MYEXPIRYDATE=`echo $MYEXPIRYDATE | date +%s -f -`
 if [ $? -ne 0 ]; then
 	# something went wrong
 	echo "UNKNOWN - expiry date for $MYLECN is not available"
