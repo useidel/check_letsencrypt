@@ -61,11 +61,13 @@ if [ $? -ne 0 ]; then
 	exit $EXITSTATUS
 fi
 
-which curl > /dev/null 2>&1
-if [ $? -ne 0 ]; then
-	EXITMESSAGE="Please install curl"
-	echo $EXITMESSAGE
-	exit $EXITSTATUS
+if [ $CATCHLOCAL -ne 1 ]; then
+	which curl > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		EXITMESSAGE="Please install curl"
+		echo $EXITMESSAGE
+		exit $EXITSTATUS
+	fi
 fi
 }
 
@@ -75,10 +77,10 @@ get_expiry_date()
 if [ $CATCHLOCAL -ne 1 ] ; then
 	MYEXPIRYDATE=`curl -s https://crt.sh/csv?q=$1\&exclude=expired\&deduplicate=Y|tail -1|awk -F"," '{print $4}'`
 else
-	if [ -e /etc/letsencrypt/live/$1/cert.pem ]; then
-		MYEXPIRYDATE=`openssl x509 -noout -enddate -in /etc/letsencrypt/live/$1/cert.pem | cut -f2 -d '='`
-	else
-		echo " Missing certificate file in /etc/letsencrypt/live/$1/"
+	MYEXPIRYDATE=`sudo openssl x509 -noout -enddate -in /etc/letsencrypt/live/$1/cert.pem | cut -f2 -d '='`
+	# the variable will be empty in case of missing file or access to it
+	if [ x${MYEXPIRYDATE}y == xy ]; then
+		echo " Missing certificate file or access to it in /etc/letsencrypt/live/$1/"
 		echo " Please x-check"
 		EXITSTATUS=$STATE_UNKNOWN
 		exit $EXITSTATUS
