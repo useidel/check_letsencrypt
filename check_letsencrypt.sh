@@ -79,7 +79,8 @@ if [ $CATCHLOCAL -ne 1 ] ; then
 else
 	MYEXPIRYDATE=`sudo openssl x509 -noout -enddate -in /etc/letsencrypt/live/$1/cert.pem | cut -f2 -d '='`
 	# the variable will be empty in case of missing file or access to it
-	if [ x${MYEXPIRYDATE}y == xy ]; then
+	echo $MYEXPIRYDATE | grep '[0-9]' > /dev/null
+        if [ $? -ne 0 ]; then
 		echo " Missing certificate file or access to it in /etc/letsencrypt/live/$1/"
 		echo " Please x-check"
 		EXITSTATUS=$STATE_UNKNOWN
