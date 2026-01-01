@@ -173,7 +173,7 @@ do
                 CUSTOMWARNCRIT=1
                 ;;
         c)
-                CRITLEVEL=$7
+                [ $CUSTOMWARNCRIT -eq 1 ] && CRITLEVEL=$7 || CRITLEVEL=$5
                 CUSTOMWARNCRIT=1
 		;;
 	*)
