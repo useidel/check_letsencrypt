@@ -1,0 +1,27 @@
+# check_letsencrypt
+
+> A Nagios/Icinga plugin for checking Let’s Encrypt certificate expiry.
+
+The shell plugin can inspect local certificates under `/etc/letsencrypt/live` or query certificate information through `crt.sh`. It supports configurable warning and critical day thresholds and requires curl and bc for remote checks.
+
+## Repository overview
+
+- [Source repository](https://github.com/useidel/check_letsencrypt): Canonical GitHub repository, including source files, issues, history, and repository metadata.
+- [README](https://raw.githubusercontent.com/useidel/check_letsencrypt/HEAD/README.md): Primary project documentation and usage notes.
+
+## Topics
+
+- Nagios
+- Icinga
+- Let’s Encrypt
+- TLS certificates
+- Shell
+
+## Additional resources
+
+- [Main plugin script](https://raw.githubusercontent.com/useidel/check_letsencrypt/HEAD/check_letsencrypt.sh)
+
+## Optional
+
+- [Repository activity](https://github.com/useidel/check_letsencrypt/commits): Commit history for implementation changes and maintenance context.
+- [Issues](https://github.com/useidel/check_letsencrypt/issues): Questions, bug reports, and project discussions when enabled.
